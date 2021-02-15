@@ -16,6 +16,7 @@ vector<Texture*> Scene::m_textures;
 
 bool texTglPressed = false;
 bool bloomToggle = false;
+bool bloomPressed = false;
 bool lightingTgl = false;
 bool specTgl = false;
 bool ambTgl = false;
@@ -408,6 +409,7 @@ void Universe::KeyInput()
 	}
 
 	if (glfwGetKey(m_window, GLFW_KEY_1) == GLFW_PRESS && !lightingTgl) {
+		m_sceneReg->view<StaticRenderer>().each([=](StaticRenderer& renderer) { renderer.lightingToggle(); });
 		lightingTgl = true;
 	}
 	if (glfwGetKey(m_window, GLFW_KEY_1) == GLFW_RELEASE) {
@@ -415,6 +417,7 @@ void Universe::KeyInput()
 	}
 
 	if (glfwGetKey(m_window, GLFW_KEY_2) == GLFW_PRESS && !ambTgl) {
+		m_sceneReg->view<StaticRenderer>().each([=](StaticRenderer& renderer) { renderer.ambientToggle(); });
 		ambTgl = true;
 	}
 	if (glfwGetKey(m_window, GLFW_KEY_2) == GLFW_RELEASE) {
@@ -422,24 +425,28 @@ void Universe::KeyInput()
 	}
 
 	if (glfwGetKey(m_window, GLFW_KEY_3) == GLFW_PRESS && !specTgl) {
+		m_sceneReg->view<StaticRenderer>().each([=](StaticRenderer& renderer) { renderer.specularToggle(); });
 		specTgl = true;
 	}
 	if (glfwGetKey(m_window, GLFW_KEY_3) == GLFW_RELEASE) {
 		specTgl = false;
 	}
 
-	if (glfwGetKey(m_window, GLFW_KEY_4) == GLFW_PRESS && !bloomToggle) {
-		bloomToggle = true;
+	if (glfwGetKey(m_window, GLFW_KEY_4) == GLFW_PRESS && !ambspecTgl) {
+		m_sceneReg->view<StaticRenderer>().each([=](StaticRenderer& renderer) { renderer.ambSpecToggle(); });
+		ambspecTgl = true;
 	}
 	if (glfwGetKey(m_window, GLFW_KEY_4) == GLFW_RELEASE) {
-		bloomToggle = false;
+		ambspecTgl = false;
 	}
 
-	if (glfwGetKey(m_window, GLFW_KEY_5) == GLFW_PRESS && !bloomToggle) {
-		bloomToggle = true;
+	if (glfwGetKey(m_window, GLFW_KEY_5) == GLFW_PRESS && !bloomPressed) {
+		bloomToggle = !bloomToggle;
+		m_sceneReg->view<StaticRenderer>().each([=](StaticRenderer& renderer) { renderer.ambSpecBloomToggle(bloomToggle); });
+		bloomPressed = true;
 	}
 	if (glfwGetKey(m_window, GLFW_KEY_5) == GLFW_RELEASE) {
-		bloomToggle = false;
+		bloomPressed = false;
 	}
 	// Toggle Textures //
 	if (glfwGetKey(m_window, GLFW_KEY_6) == GLFW_PRESS && !texTglPressed) {

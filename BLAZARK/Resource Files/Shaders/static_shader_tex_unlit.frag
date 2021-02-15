@@ -12,10 +12,12 @@ uniform sampler2D albedo;
 uniform bool lighting;
 
 uniform vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
-uniform vec3 ambientColor = vec3(1.0f, 1.0f, 1.0f);
-uniform float ambientPower = 0.25f;
+uniform float diffusePower;
 
-uniform float specularStrength = 0.5f;
+uniform vec3 ambientColor = vec3(1.0f, 1.0f, 1.0f);
+uniform float ambientPower;
+
+uniform float specularStrength;
 
 void main()
 {
@@ -26,9 +28,13 @@ void main()
 
     vec3 lightDir = normalize(vec3(0.0f, 0.0f, 0.0f) - vs_position.xyz);
     float diff = max(dot(lightDir, normal), 0.0f);
+    vec3 diffuse = diffusePower * diff * lightColor;
 
+    vec3 viewDir = normalize(camPos - vs_position.xyz);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    vec3 specular = specularStrength * spec * lightColor;
 
-
-    vec3 result = (ambient + (diff * lightColor)) * texCol.rgb;
+    vec3 result = (ambient + diffuse + specular) * texCol.rgb;
     fs_colour = vec4(result, texCol.a);
 }

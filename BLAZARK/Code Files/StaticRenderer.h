@@ -20,6 +20,12 @@ public:
 
 	void toggleTexture();
 
+	void lightingToggle();
+	void ambientToggle();
+	void specularToggle();
+	void ambSpecToggle();
+	void ambSpecBloomToggle(bool);
+
 	virtual void Draw();
 
 private:
@@ -31,4 +37,7 @@ private:
 	Texture* m_tex;
 	bool m_textureToggle = true;
 	bool m_lightSource;
+	bool m_lightToggle = true;
+	bool m_ambientToggle = true;
+	bool m_specularToggle = true;
 };

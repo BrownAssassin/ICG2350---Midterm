@@ -36,6 +36,45 @@ void StaticRenderer::toggleTexture() {
 	m_textureToggle = !m_textureToggle;
 }
 
+void StaticRenderer::lightingToggle()
+{
+	m_lightToggle = !m_lightToggle;
+}
+
+void StaticRenderer::ambientToggle()
+{
+	m_ambientToggle = !m_ambientToggle;
+}
+
+void StaticRenderer::specularToggle()
+{
+	m_specularToggle = !m_specularToggle;
+}
+
+void StaticRenderer::ambSpecToggle()
+{
+	if (m_ambientToggle && m_specularToggle) {
+		m_ambientToggle = false;
+		m_specularToggle = false;
+	}
+	else {
+		m_ambientToggle = true;
+		m_specularToggle = true;
+	}
+}
+
+void StaticRenderer::ambSpecBloomToggle(bool bloomState)
+{
+	if (bloomState) {
+		m_ambientToggle = true;
+		m_specularToggle = true;
+	}
+	else {
+		m_ambientToggle = false;
+		m_specularToggle = false;
+	}
+}
+
 void StaticRenderer::Draw() {
 	auto& transform = GameObject::GetComponent<Transform>(m_entity);
 
@@ -64,6 +103,21 @@ void StaticRenderer::Draw() {
 	m_shader[currShader]->setMat4fv(GameObject::GetComponent<Camera>(m_camera).GetViewProj(), "ViewProjection");
 	m_shader[currShader]->setMat4fv(transform.GetGlobal(), "ModelMatrix");
 	m_shader[currShader]->setMat3fv(transform.GetNormal(), "NormalMatrix");
+
+	if (m_lightToggle)
+		m_shader[currShader]->set1f(1.0, "diffusePower");
+	else
+		m_shader[currShader]->set1f(0.0, "diffusePower");
+	
+	if (m_ambientToggle && m_lightToggle)
+		m_shader[currShader]->set1f(0.5, "ambientPower");
+	else
+		m_shader[currShader]->set1f(0.0, "ambientPower");
+
+	if (m_specularToggle && m_lightToggle)
+		m_shader[currShader]->set1f(0.5, "specularStrength");
+	else
+		m_shader[currShader]->set1f(0.0, "specularStrength");
 	
 	m_vao->DrawArray();
 	m_shader[currShader]->unuse();
